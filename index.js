@@ -7,7 +7,7 @@ const authRoutes = require('./routes/auth');
 const contentRoutes = require('./routes/content');
 
 const app = express();
-const PORT = 5001; // Force 5001 to avoid macOS AirPlay conflict on 5000
+const PORT = process.env.PORT || 5001; 
 
 // Connect to Database
 connectDB();
@@ -20,7 +20,11 @@ app.use((req, res, next) => {
 
 // Use robust CORS package
 app.use(cors({
-  origin: 'http://localhost:3000',
+  origin: [
+    'http://localhost:3000', 
+    'https://p-upapers-mcq-frontend.vercel.app',
+    process.env.CLIENT_URL
+  ].filter(Boolean),
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
@@ -30,12 +34,17 @@ app.use(express.json());
 app.use(cookieParser());
 
 // Health Check
-app.get('/health', (req, res) => res.json({ status: 'ok', time: new Date() }));
+app.get('/', (req, res) => res.json({ message: 'Server is running' }));
 
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/content', contentRoutes);
 
-app.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT}`);
-});
+// Only listen if run directly (not when imported by Vercel)
+if (require.main === module) {
+  app.listen(PORT, () => {
+    console.log(`🚀 Server running on port ${PORT}`);
+  });
+}
+
+module.exports = app; // Export for Vercel
