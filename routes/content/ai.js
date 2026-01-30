@@ -51,9 +51,9 @@ router.post('/explain', verifyToken, async (req, res) => {
     res.json({ explanation: text });
   } catch (err) {
     console.error('AI Explanation Error:', err);
+    // User-friendly message, hiding the raw Google API error
     res.status(500).json({ 
-      message: 'Failed to generate AI explanation', 
-      error: err.message // Send actual error to client for debugging
+      message: 'The AI Tutor is currently taking a break. Please try again in potential moments.' 
     });
   }
 });
