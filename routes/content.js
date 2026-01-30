@@ -7,6 +7,7 @@ const Result = require('../models/Result');
 const verifyToken = require('../middleware/auth');
 const verifyAdmin = require('../middleware/admin');
 const { upload } = require('../config/cloudinary');
+const openai = require('../config/ai');
 
 // @route   GET /api/content/subjects
 // @desc    Get all subjects
@@ -481,6 +482,61 @@ router.put('/questions/:id', verifyToken, verifyAdmin, async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: 'Server error' });
+  }
+});
+
+// @route   POST /api/content/explain
+// @desc    Get AI-generated explanation for a question
+// @access  Private
+router.post('/explain', verifyToken, async (req, res) => {
+  try {
+    const { questionId, userChoice } = req.body;
+    if (!questionId) return res.status(400).json({ message: 'Question ID is required' });
+
+    const question = await Question.findById(questionId).populate('subject', 'name');
+    if (!question) return res.status(404).json({ message: 'Question not found' });
+
+    if (!process.env.OPENAI_API_KEY) {
+      return res.status(503).json({ message: 'AI Service currently unavailable (API Key missing)' });
+    }
+
+    const optionsText = question.options.map((opt, i) => `${String.fromCharCode(65 + i)}) ${opt}`).join('\n');
+    const correctLetter = String.fromCharCode(65 + question.correctOption);
+    const userLetter = userChoice !== undefined && userChoice !== null ? String.fromCharCode(65 + userChoice) : 'N/A';
+
+    const prompt = `
+      You are an expert tutor for the Panjab University Common Entrance Test (PU CET).
+      Explain the following multiple-choice question step-by-step.
+      
+      Question: ${question.text}
+      Options:
+      ${optionsText}
+      
+      Correct Answer: ${correctLetter}
+      User's Choice: ${userLetter}
+
+      Requirement:
+      1. Provide a clear, logical, and educational explanation.
+      2. If the user was wrong, gently explain why their choice might be a common mistake.
+      3. Use professional, encouraging tone.
+      4. Support LaTeX for mathematical or scientific formulas (use $ for inline and $$ for blocks).
+      5. Keep it concise but comprehensive (max 300 words).
+      6. Return findings in clean Markdown.
+    `;
+
+    const response = await openai.chat.completions.create({
+      model: "gpt-4o-mini", // Efficient and high quality for this task
+      messages: [
+        { role: "system", content: "You are a helpful academic tutor specializing in PU CET exam preparation." },
+        { role: "user", content: prompt }
+      ],
+      temperature: 0.7,
+    });
+
+    res.json({ explanation: response.choices[0].message.content });
+  } catch (err) {
+    console.error('AI Explanation Error:', err);
+    res.status(500).json({ message: 'Failed to generate AI explanation' });
   }
 });
 

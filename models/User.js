@@ -45,7 +45,11 @@ const userSchema = new mongoose.Schema({
   institution: {
     type: String,
     default: ''
-  }
+  },
+  bookmarks: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Question'
+  }]
 }, { timestamps: true });
 
 // Hash password before saving

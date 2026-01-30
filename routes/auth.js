@@ -266,4 +266,50 @@ router.post('/profile-image', verifyToken, upload.single('image'), async (req, r
   }
 });
 
+// @route   POST /api/auth/bookmarks
+// @desc    Toggle bookmark for a question
+// @access  Private
+router.post('/bookmarks', verifyToken, async (req, res) => {
+  try {
+    const { questionId } = req.body;
+    if (!questionId) return res.status(400).json({ message: 'Question ID is required' });
+
+    const user = await User.findById(req.user.userId);
+    if (!user) return res.status(404).json({ message: 'User not found' });
+
+    const isBookmarked = user.bookmarks.includes(questionId);
+
+    if (isBookmarked) {
+      user.bookmarks = user.bookmarks.filter(id => id.toString() !== questionId);
+    } else {
+      user.bookmarks.push(questionId);
+    }
+
+    await user.save();
+    res.json({ bookmarks: user.bookmarks });
+  } catch (err) {
+    console.error('Bookmark Error:', err);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+// @route   GET /api/auth/bookmarks
+// @desc    Get all bookmarked questions
+// @access  Private
+router.get('/bookmarks', verifyToken, async (req, res) => {
+  try {
+    const user = await User.findById(req.user.userId).populate({
+      path: 'bookmarks',
+      populate: { path: 'subject', select: 'name slug' }
+    });
+    
+    if (!user) return res.status(404).json({ message: 'User not found' });
+
+    res.json(user.bookmarks);
+  } catch (err) {
+    console.error('Fetch Bookmarks Error:', err);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
 module.exports = router;
