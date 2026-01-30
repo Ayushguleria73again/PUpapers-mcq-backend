@@ -24,6 +24,17 @@ router.get('/questions', verifyToken, async (req, res) => {
       query.subject = subject._id;
     }
     
+    // Check if user is Premium
+    if (req.user && req.user.userId) {
+        const user = await User.findById(req.user.userId);
+        if (!user || !user.isPremium) {
+            return res.status(403).json({ 
+                message: 'Chapter practice is a Premium feature.',
+                code: 'PREMIUM_ONLY'
+            });
+        }
+    }
+
     // Filter by chapter if provided
     if (chapterId) {
         query.chapter = chapterId;
