@@ -3,7 +3,7 @@ const router = express.Router();
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const verifyToken = require('../middleware/auth');
-const { sendOTPEmail } = require('../utils/emailService');
+const { sendOTPEmail, sendPasswordResetEmail } = require('../utils/emailService');
 
 // Helper to generate 6-digit OTP
 const generateOTP = () => Math.floor(100000 + Math.random() * 900000).toString();
@@ -315,7 +315,7 @@ router.get('/bookmarks', verifyToken, async (req, res) => {
 module.exports = router;
 
 // Re-import email service to include new function
-const { sendOTPEmail, sendPasswordResetEmail } = require('../utils/emailService');
+
 
 // @route   POST /api/auth/forgot-password
 // @desc    Initiate password reset
