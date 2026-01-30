@@ -62,6 +62,11 @@ router.get('/questions', verifyToken, async (req, res) => {
         query.chapter = chapterId;
     }
 
+    // Filter by difficulty if provided and not 'all'
+    if (req.query.difficulty && req.query.difficulty !== 'all') {
+        query.difficulty = req.query.difficulty;
+    }
+
     const questions = await Question.find(query).populate('subject', 'name slug');
     res.json(questions);
   } catch (err) {
@@ -125,12 +130,32 @@ router.get('/progress', verifyToken, async (req, res) => {
         date: r.createdAt.toLocaleDateString(),
         points: `+${Math.round(r.percentage / 10)}` // Mock points calculation
       }));
+
+    // Calculate Subject Mastery Breakdown
+    const allSubjects = await Subject.find().sort({ name: 1 });
+    const subjectProgress = allSubjects.map(sub => {
+      const subResults = results.filter(r => r.subject && r.subject._id.toString() === sub._id.toString());
+      const testsCount = subResults.length;
+      const avgAcc = testsCount > 0 
+        ? Math.round(subResults.reduce((acc, curr) => acc + curr.percentage, 0) / testsCount)
+        : 0;
+      
+      return {
+        id: sub._id,
+        name: sub.name,
+        slug: sub.slug,
+        image: sub.image,
+        testsCount,
+        accuracy: avgAcc
+      };
+    });
     
     res.json({
       totalTests,
       avgPercentage,
       level,
-      recentActivity
+      recentActivity,
+      subjectProgress
     });
   } catch (err) {
     console.error('Error fetching progress:', err);

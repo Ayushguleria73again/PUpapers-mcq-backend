@@ -29,6 +29,22 @@ const userSchema = new mongoose.Schema({
   },
   otpExpires: {
     type: Date,
+  },
+  profileImage: {
+    type: String,
+    default: ''
+  },
+  bio: {
+    type: String,
+    default: ''
+  },
+  phone: {
+    type: String,
+    default: ''
+  },
+  institution: {
+    type: String,
+    default: ''
   }
 }, { timestamps: true });
 

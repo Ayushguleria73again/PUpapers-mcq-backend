@@ -185,8 +185,85 @@ router.post('/login', async (req, res) => {
 
 // @route   POST /api/auth/logout
 router.post('/logout', (req, res) => {
-  res.clearCookie('token');
+  res.clearCookie('token', {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax'
+  });
   res.json({ message: 'Logged out successfully' });
+});
+
+// @route   DELETE /api/auth/account
+router.delete('/account', verifyToken, async (req, res) => {
+  try {
+    const userId = req.user.userId;
+
+    // 1. Delete all user results
+    const Result = require('../models/Result');
+    await Result.deleteMany({ user: userId });
+
+    // 2. Delete user
+    const user = await User.findByIdAndDelete(userId);
+    if (!user) return res.status(404).json({ message: 'User not found' });
+
+    // 3. Clear cookie
+    res.clearCookie('token', {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax'
+    });
+
+    res.json({ message: 'Account and all data deleted successfully' });
+  } catch (err) {
+    console.error('SERVER ERROR (DELETE ACCOUNT):', err);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+// @route   PUT /api/auth/profile
+router.put('/profile', verifyToken, async (req, res) => {
+  try {
+    const { fullName, bio, phone, institution } = req.body;
+    
+    const user = await User.findById(req.user.userId);
+    if (!user) return res.status(404).json({ message: 'User not found' });
+
+    if (fullName) user.fullName = fullName;
+    if (bio !== undefined) user.bio = bio;
+    if (phone !== undefined) user.phone = phone;
+    if (institution !== undefined) user.institution = institution;
+
+    await user.save();
+    
+    // Return updated user without password
+    const updatedUser = await User.findById(req.user.userId).select('-password');
+    res.json(updatedUser);
+  } catch (err) {
+    console.error('SERVER ERROR (PROFILE UPDATE):', err);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+// @route   POST /api/auth/profile-image
+// Reuse the common upload config
+const { upload } = require('../config/cloudinary');
+router.post('/profile-image', verifyToken, upload.single('image'), async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ message: 'No file uploaded' });
+    }
+
+    const user = await User.findById(req.user.userId);
+    if (!user) return res.status(404).json({ message: 'User not found' });
+
+    user.profileImage = req.file.path;
+    await user.save();
+
+    res.json({ url: req.file.path });
+  } catch (err) {
+    console.error('SERVER ERROR (PROFILE IMAGE):', err);
+    res.status(500).json({ message: 'Server error' });
+  }
 });
 
 module.exports = router;
