@@ -193,6 +193,21 @@ router.post('/chapters', verifyToken, verifyAdmin, async (req, res) => {
   }
 });
 
+// @route   POST /api/content/upload
+// @desc    Upload an image for markdown content
+// @access  Private (Admin only)
+router.post('/upload', verifyToken, verifyAdmin, upload.single('image'), async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ message: 'No file uploaded' });
+    }
+    res.json({ url: req.file.path });
+  } catch (err) {
+    console.error('Upload Error:', err);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
 // @route   POST /api/content/subjects
 // @desc    Add a new subject
 // @access  Private (Admin only)
