@@ -313,3 +313,64 @@ router.get('/bookmarks', verifyToken, async (req, res) => {
 });
 
 module.exports = router;
+
+// Re-import email service to include new function
+const { sendOTPEmail, sendPasswordResetEmail } = require('../utils/emailService');
+
+// @route   POST /api/auth/forgot-password
+// @desc    Initiate password reset
+// @access  Public
+router.post('/forgot-password', async (req, res) => {
+  try {
+    const { email } = req.body;
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      // For security, checking existence blindly is risky, but for this UX we'll return 404 or generic
+      return res.status(404).json({ message: 'User not found with this email' });
+    }
+
+    const otp = generateOTP();
+    user.resetPasswordOtp = otp;
+    user.resetPasswordExpires = new Date(Date.now() + 10 * 60 * 1000); // 10 mins
+    await user.save();
+
+    await sendPasswordResetEmail(email, user.fullName, otp);
+
+    res.json({ message: 'Password reset code sent to your email' });
+  } catch (err) {
+    console.error('Forgot Password Error:', err);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+// @route   POST /api/auth/reset-password
+// @desc    Reset password with OTP
+// @access  Public
+router.post('/reset-password', async (req, res) => {
+  try {
+    const { email, otp, newPassword } = req.body;
+
+    const user = await User.findOne({ 
+      email, 
+      resetPasswordOtp: otp, 
+      resetPasswordExpires: { $gt: Date.now() } 
+    });
+
+    if (!user) {
+      return res.status(400).json({ message: 'Invalid or expired reset code' });
+    }
+
+    // Password hashing is handled by pre('save') hook, but we need to set it directly
+    user.password = newPassword; 
+    user.resetPasswordOtp = undefined;
+    user.resetPasswordExpires = undefined;
+    
+    await user.save();
+
+    res.json({ message: 'Password reset successfully. You can now login.' });
+  } catch (err) {
+    console.error('Reset Password Error:', err);
+    res.status(500).json({ message: 'Server error' });
+  }
+});

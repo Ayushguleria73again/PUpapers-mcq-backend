@@ -61,6 +61,12 @@ const userSchema = new mongoose.Schema({
   isPremium: {
     type: Boolean,
     default: false
+  },
+  resetPasswordOtp: {
+    type: String
+  },
+  resetPasswordExpires: {
+    type: Date
   }
 }, { timestamps: true });
 
