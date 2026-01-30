@@ -51,7 +51,10 @@ router.post('/explain', verifyToken, async (req, res) => {
     res.json({ explanation: text });
   } catch (err) {
     console.error('AI Explanation Error:', err);
-    res.status(500).json({ message: 'Failed to generate AI explanation with Gemini' });
+    res.status(500).json({ 
+      message: 'Failed to generate AI explanation', 
+      error: err.message // Send actual error to client for debugging
+    });
   }
 });
 
