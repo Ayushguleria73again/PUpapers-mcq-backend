@@ -7,7 +7,7 @@ const Result = require('../models/Result');
 const verifyToken = require('../middleware/auth');
 const verifyAdmin = require('../middleware/admin');
 const { upload } = require('../config/cloudinary');
-const openai = require('../config/ai');
+const aiModel = require('../config/ai');
 
 // @route   GET /api/content/subjects
 // @desc    Get all subjects
@@ -490,13 +490,15 @@ router.put('/questions/:id', verifyToken, verifyAdmin, async (req, res) => {
 // @access  Private
 router.post('/explain', verifyToken, async (req, res) => {
   try {
+    console.log(`[AI Request] Received explanation request for: ${req.body.questionId}`);
     const { questionId, userChoice } = req.body;
     if (!questionId) return res.status(400).json({ message: 'Question ID is required' });
 
     const question = await Question.findById(questionId).populate('subject', 'name');
     if (!question) return res.status(404).json({ message: 'Question not found' });
 
-    if (!process.env.OPENAI_API_KEY) {
+    if (!process.env.GEMINI_API_KEY) {
+      console.error('[AI Error] GEMINI_API_KEY is missing');
       return res.status(503).json({ message: 'AI Service currently unavailable (API Key missing)' });
     }
 
@@ -505,38 +507,32 @@ router.post('/explain', verifyToken, async (req, res) => {
     const userLetter = userChoice !== undefined && userChoice !== null ? String.fromCharCode(65 + userChoice) : 'N/A';
 
     const prompt = `
-      You are an expert tutor for the Panjab University Common Entrance Test (PU CET).
-      Explain the following multiple-choice question step-by-step.
+      ### System Instruction:
+      You are an expert academic tutor for the Panjab University Common Entrance Test (PU CET).
+      Provide a clear, logical, and educational step-by-step explanation.
+      - If the user choice is provided and it is wrong, explain why it might be a common mistake.
+      - Support LaTeX for math/science (use $ for inline, $$ for blocks).
+      - Always use standard ASCII characters for quotes (avoid smart quotes).
       
+      ### Question Details:
       Question: ${question.text}
       Options:
       ${optionsText}
       
       Correct Answer: ${correctLetter}
       User's Choice: ${userLetter}
-
-      Requirement:
-      1. Provide a clear, logical, and educational explanation.
-      2. If the user was wrong, gently explain why their choice might be a common mistake.
-      3. Use professional, encouraging tone.
-      4. Support LaTeX for mathematical or scientific formulas (use $ for inline and $$ for blocks).
-      5. Keep it concise but comprehensive (max 300 words).
-      6. Return findings in clean Markdown.
     `;
 
-    const response = await openai.chat.completions.create({
-      model: "gpt-4o-mini", // Efficient and high quality for this task
-      messages: [
-        { role: "system", content: "You are a helpful academic tutor specializing in PU CET exam preparation." },
-        { role: "user", content: prompt }
-      ],
-      temperature: 0.7,
+    const response = await aiModel.generateContent({
+      contents: [{ role: "user", parts: [{ text: prompt }] }]
     });
-
-    res.json({ explanation: response.choices[0].message.content });
+    const result = await response.response;
+    const text = result.text();
+    
+    res.json({ explanation: text });
   } catch (err) {
     console.error('AI Explanation Error:', err);
-    res.status(500).json({ message: 'Failed to generate AI explanation' });
+    res.status(500).json({ message: 'Failed to generate AI explanation with Gemini' });
   }
 });
 
