@@ -39,6 +39,7 @@ app.get('/', (req, res) => res.json({ message: 'Server is running' }));
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/content', contentRoutes);
+app.use('/api/contact', require('./routes/contact'));
 
 // Only listen if run directly (not when imported by Vercel)
 if (require.main === module) {
