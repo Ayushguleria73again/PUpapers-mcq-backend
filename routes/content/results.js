@@ -26,10 +26,11 @@ router.post('/results', verifyToken, async (req, res) => {
 
     await result.save();
 
-    // Update user's attempted questions list
+    // Update user's attempted questions list & increment usage count
     if (req.body.questions && req.body.questions.length > 0) {
         await User.findByIdAndUpdate(req.user.userId, {
-            $addToSet: { attemptedQuestions: { $each: req.body.questions } }
+            $addToSet: { attemptedQuestions: { $each: req.body.questions } },
+            $inc: { freeTestsTaken: 1 }
         });
     }
 

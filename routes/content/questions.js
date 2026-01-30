@@ -149,10 +149,19 @@ router.get('/pucet-exam', verifyToken, async (req, res) => {
       return res.status(404).json({ message: 'One or more subjects for this stream not found' });
     }
 
-    // Get user's attempted questions to exclude them
-    let attemptedIds = [];
+    // Get user to check limits
     if (req.user && req.user.userId) {
         const user = await User.findById(req.user.userId);
+        
+        // Check Free Limit (Max 5 attempts for non-premium)
+        if (user && !user.isPremium && user.freeTestsTaken >= 5) {
+            return res.status(403).json({ 
+                message: 'Free limit reached', 
+                code: 'LIMIT_REACHED',
+                isPremium: false
+            });
+        }
+
         if (user) attemptedIds = user.attemptedQuestions || [];
     }
 
