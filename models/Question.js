@@ -36,6 +36,14 @@ const questionSchema = new mongoose.Schema({
     enum: ['easy', 'medium', 'hard'],
     default: 'medium'
   },
+  averageTime: {
+    type: Number,
+    default: 0
+  },
+  attemptCount: {
+    type: Number,
+    default: 0
+  },
   createdAt: {
     type: Date,
     default: Date.now

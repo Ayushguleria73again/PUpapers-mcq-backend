@@ -29,10 +29,43 @@ router.post('/results', verifyToken, async (req, res) => {
     // Update user's attempted questions (extract IDs from new structure)
     if (req.body.questions && req.body.questions.length > 0) {
         const questionIds = req.body.questions.map(q => q.question);
+        
+        // 1. Update User Stats
         await User.findByIdAndUpdate(req.user.userId, {
             $addToSet: { attemptedQuestions: { $each: questionIds } },
             $inc: { freeTestsTaken: 1 }
         });
+
+        // 2. Update Question Global Stats (Average Time)
+        // We do this asynchronously so we don't block the response too long
+        // or we await it if consistency is critical. Let's await for now.
+        const Question = require('../../models/Question');
+        
+        for (const qStat of req.body.questions) {
+            // Using findOneAndUpdate to atomically increment count and update average
+            // Formula for new Average: NewAvg = ((OldAvg * OldCount) + NewValue) / (OldCount + 1)
+            // Since Mongo doesn't support arithmetic using current field values easily in simple update,
+            // we will fetch and save.
+            
+            try {
+                const question = await Question.findById(qStat.question);
+                if (question) {
+                    const oldAvg = question.averageTime || 0;
+                    const oldCount = question.attemptCount || 0;
+                    const newTime = qStat.timeTaken || 0;
+
+                    // Calculate new average
+                    // Avoid huge outliers? Maybe cap time at 300s? logic for another day.
+                    const newAvg = ((oldAvg * oldCount) + newTime) / (oldCount + 1);
+
+                    question.averageTime = newAvg;
+                    question.attemptCount = oldCount + 1;
+                    await question.save();
+                }
+            } catch (err) {
+                console.error(`Failed to update stats for q ${qStat.question}:`, err);
+            }
+        }
     }
 
     res.json(result);
