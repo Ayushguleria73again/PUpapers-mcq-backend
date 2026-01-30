@@ -49,7 +49,7 @@ const sendOTPEmail = async (email, fullName, otp) => {
   }
 };
 
-};
+
 
 const sendContactEmail = async (name, email, subject, message) => {
   const mailOptions = {
