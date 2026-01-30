@@ -53,7 +53,15 @@ const userSchema = new mongoose.Schema({
   attemptedQuestions: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Question'
-  }]
+  }],
+  freeTestsTaken: {
+    type: Number,
+    default: 0
+  },
+  isPremium: {
+    type: Boolean,
+    default: false
+  }
 }, { timestamps: true });
 
 // Hash password before saving
