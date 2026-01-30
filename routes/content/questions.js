@@ -24,16 +24,7 @@ router.get('/questions', verifyToken, async (req, res) => {
       query.subject = subject._id;
     }
     
-    // Check if user is Premium
-    if (req.user && req.user.userId) {
-        const user = await User.findById(req.user.userId);
-        if (!user || !user.isPremium) {
-            return res.status(403).json({ 
-                message: 'Chapter practice is a Premium feature.',
-                code: 'PREMIUM_ONLY'
-            });
-        }
-    }
+
 
     // Filter by chapter if provided
     if (chapterId) {
@@ -140,27 +131,48 @@ router.delete('/questions/:id', verifyToken, verifyAdmin, async (req, res) => {
 });
 
 // @route   GET /pucet-exam
-// @desc    Get questions for full PUCET mock test (PCB/PCM)
+// @desc    Get questions for full PUCET mock test (Stream or Single Subject)
 // @access  Private
 router.get('/pucet-exam', verifyToken, async (req, res) => {
   try {
-    const { stream } = req.query; // 'PCB' or 'PCM'
-    if (!stream || !['PCB', 'PCM'].includes(stream)) {
-      return res.status(400).json({ message: 'Valid stream (PCB or PCM) is required' });
+    const { stream, subject } = req.query; 
+
+    if (!stream && !subject) {
+      return res.status(400).json({ message: 'Valid stream (PCB/PCM) or subject is required' });
     }
 
-    // Define subject slugs for the stream
-    const subjectSlugs = ['physics-11th-12th', 'chemistry'];
-    if (stream === 'PCB') subjectSlugs.push('biology');
-    else subjectSlugs.push('mathematics');
+    let subjects = [];
+    let perSubjectCount = 20;
 
-    // Find subject IDs
-    const subjects = await Subject.find({ slug: { $in: subjectSlugs } });
-    if (subjects.length < 3) {
-      return res.status(404).json({ message: 'One or more subjects for this stream not found' });
+    // A. Single Subject Mode (requested by user)
+    if (subject) {
+        const sub = await Subject.findOne({ slug: subject });
+        if (!sub) {
+            return res.status(404).json({ message: 'Subject not found' });
+        }
+        subjects = [sub];
+        perSubjectCount = 60; // specific subject mock usually has more questions
+    } 
+    // B. Stream Mode (Legacy/Combined)
+    else if (stream) {
+        if (!['PCB', 'PCM'].includes(stream)) {
+            return res.status(400).json({ message: 'Invalid stream' });
+        }
+        // Define subject slugs for the stream
+        const subjectSlugs = ['physics-11th-12th', 'chemistry'];
+        if (stream === 'PCB') subjectSlugs.push('biology');
+        else subjectSlugs.push('mathematics');
+
+        // Find subject IDs
+        subjects = await Subject.find({ slug: { $in: subjectSlugs } });
+        if (subjects.length < 3) {
+            return res.status(404).json({ message: 'One or more subjects for this stream not found' });
+        }
+        perSubjectCount = 20;
     }
 
     // Get user to check limits
+    let attemptedIds = [];
     if (req.user && req.user.userId) {
         const user = await User.findById(req.user.userId);
         
@@ -176,7 +188,6 @@ router.get('/pucet-exam', verifyToken, async (req, res) => {
         if (user) attemptedIds = user.attemptedQuestions || [];
     }
 
-    const perSubjectCount = 20;
     let allQuestions = [];
 
     // Fetch random questions from each subject
