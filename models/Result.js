@@ -24,8 +24,23 @@ const resultSchema = new mongoose.Schema({
     required: true
   },
   questions: [{
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Question'
+    question: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Question',
+      required: true
+    },
+    timeTaken: {
+      type: Number, // in seconds
+      default: 0
+    },
+    userChoice: {
+      type: Number, // index 0-3
+      default: -1
+    },
+    isCorrect: {
+      type: Boolean,
+      default: false
+    }
   }],
   createdAt: {
     type: Date,

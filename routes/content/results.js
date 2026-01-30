@@ -21,15 +21,16 @@ router.post('/results', verifyToken, async (req, res) => {
       score,
       totalQuestions,
       percentage,
-      questions: req.body.questions || [] // Store the IDs of questions in this test
+      questions: req.body.questions || [] // Now expects array of objects { question, timeTaken, userChoice, isCorrect }
     });
 
     await result.save();
 
-    // Update user's attempted questions list & increment usage count
+    // Update user's attempted questions (extract IDs from new structure)
     if (req.body.questions && req.body.questions.length > 0) {
+        const questionIds = req.body.questions.map(q => q.question);
         await User.findByIdAndUpdate(req.user.userId, {
-            $addToSet: { attemptedQuestions: { $each: req.body.questions } },
+            $addToSet: { attemptedQuestions: { $each: questionIds } },
             $inc: { freeTestsTaken: 1 }
         });
     }
