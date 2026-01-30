@@ -633,4 +633,52 @@ router.post('/explain', verifyToken, async (req, res) => {
   }
 });
 
+// @route   POST /api/content/chat
+// @desc    General AI Chat for Admin Helpers
+// @access  Private
+router.post('/chat', verifyToken, async (req, res) => {
+  try {
+    const { message, context } = req.body;
+    if (!message) return res.status(400).json({ message: 'Message is required' });
+
+    if (!process.env.GEMINI_API_KEY) {
+      return res.status(503).json({ message: 'AI Service currently unavailable (API Key missing)' });
+    }
+
+    const systemPrompt = `
+      You are an intelligent assistant helping an administrator manage content for an educational platform (PU CET exams).
+      Context: ${context || 'General Admin Task'}
+      
+      Your goal is to help with:
+      1. Drafting subject descriptions.
+      2. Suggesting relevant topics or slugs.
+      3. Formatting content in Markdown/LaTeX.
+      4. Providing creative ideas for educational content.
+      
+      Keep responses concise, professional, and directly useful.
+    `;
+
+    const chat = aiModel.startChat({
+        history: [
+            {
+                role: "user",
+                parts: [{ text: systemPrompt }],
+            },
+            {
+                role: "model",
+                parts: [{ text: "Understood. I am ready to assist you with your content management tasks." }],
+            },
+        ],
+    });
+
+    const result = await chat.sendMessage(message);
+    const text = result.response.text();
+
+    res.json({ reply: text });
+  } catch (err) {
+    console.error('AI Chat Error:', err);
+    res.status(500).json({ message: 'Failed to generate AI response' });
+  }
+});
+
 module.exports = router;
