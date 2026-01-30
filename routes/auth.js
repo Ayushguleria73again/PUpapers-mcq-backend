@@ -12,11 +12,11 @@ const generateOTP = () => Math.floor(100000 + Math.random() * 900000).toString()
 router.get('/me', verifyToken, async (req, res) => {
   try {
     const user = await User.findById(req.user.userId).select('-password');
-    if (!user) return res.status(404).json({ message: 'User not found' });
+    if (!user) return res.status(404).json({ message: 'User profile not found. Please login again.' });
     
     // Check if user is verified
     if (!user.isVerified) {
-      return res.status(403).json({ message: 'Email not verified', email: user.email });
+      return res.status(403).json({ message: 'Your email is not verified yet. Please verify to access your profile.', email: user.email });
     }
     
     res.json(user);
@@ -33,7 +33,7 @@ router.post('/signup', async (req, res) => {
     
     let user = await User.findOne({ email });
     if (user && user.isVerified) {
-      return res.status(400).json({ message: 'User already exists' });
+      return res.status(400).json({ message: 'An account with this email already exists. Please login instead.' });
     }
 
     const otp = generateOTP();
@@ -62,7 +62,7 @@ router.post('/signup', async (req, res) => {
     const emailSent = await sendOTPEmail(email, fullName, otp);
     
     if (!emailSent) {
-      return res.status(500).json({ message: 'Failed to send verification email' });
+      return res.status(500).json({ message: 'We could not send the verification email. Please try signing up again.' });
     }
 
     res.status(201).json({ 
@@ -87,7 +87,7 @@ router.post('/verify-otp', async (req, res) => {
     });
 
     if (!user) {
-      return res.status(400).json({ message: 'Invalid or expired OTP' });
+      return res.status(400).json({ message: 'The code you entered is invalid or has expired. Please request a new one.' });
     }
 
     user.isVerified = true;
@@ -125,7 +125,7 @@ router.post('/resend-otp', async (req, res) => {
     const { email } = req.body;
     const user = await User.findOne({ email });
 
-    if (!user) return res.status(404).json({ message: 'User not found' });
+    if (!user) return res.status(404).json({ message: 'No account found with this email addressed.' });
     if (user.isVerified) return res.status(400).json({ message: 'Email already verified' });
 
     const otp = generateOTP();
@@ -148,13 +148,18 @@ router.post('/login', async (req, res) => {
     const { email, password } = req.body;
 
     const user = await User.findOne({ email });
-    if (!user || !(await user.comparePassword(password))) {
-      return res.status(401).json({ message: 'Invalid credentials' });
+    if (!user) {
+      return res.status(401).json({ message: 'No account found with this email. Please sign up first.' });
+    }
+    
+    const isMatch = await user.comparePassword(password);
+    if (!isMatch) {
+      return res.status(401).json({ message: 'Incorrect password. Please try again.' });
     }
 
     if (!user.isVerified) {
       return res.status(403).json({ 
-        message: 'Account not verified. Please check your email.',
+        message: 'Your email is not verified. We sent a new code to your email.',
         unverified: true,
         email: user.email 
       });
@@ -327,7 +332,7 @@ router.post('/forgot-password', async (req, res) => {
 
     if (!user) {
       // For security, checking existence blindly is risky, but for this UX we'll return 404 or generic
-      return res.status(404).json({ message: 'User not found with this email' });
+      return res.status(404).json({ message: 'We couldn\'t find an account with that email address.' });
     }
 
     const otp = generateOTP();
@@ -358,7 +363,7 @@ router.post('/reset-password', async (req, res) => {
     });
 
     if (!user) {
-      return res.status(400).json({ message: 'Invalid or expired reset code' });
+      return res.status(400).json({ message: 'This reset code is invalid or has expired. Please try again.' });
     }
 
     // Password hashing is handled by pre('save') hook, but we need to set it directly
