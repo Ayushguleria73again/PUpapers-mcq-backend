@@ -485,6 +485,59 @@ router.put('/questions/:id', verifyToken, verifyAdmin, async (req, res) => {
   }
 });
 
+// @route   GET /api/content/pucet-exam
+// @desc    Get questions for full PUCET mock test (PCB/PCM)
+// @access  Private
+router.get('/pucet-exam', verifyToken, async (req, res) => {
+  try {
+    const { stream } = req.query; // 'PCB' or 'PCM'
+    if (!stream || !['PCB', 'PCM'].includes(stream)) {
+      return res.status(400).json({ message: 'Valid stream (PCB or PCM) is required' });
+    }
+
+    // Define subject slugs for the stream
+    const subjectSlugs = ['physics-11th-12th', 'chemistry'];
+    if (stream === 'PCB') subjectSlugs.push('biology');
+    else subjectSlugs.push('mathematics');
+
+    // Find subject IDs
+    const subjects = await Subject.find({ slug: { $in: subjectSlugs } });
+    if (subjects.length < 3) {
+      return res.status(404).json({ message: 'One or more subjects for this stream not found' });
+    }
+
+    const perSubjectCount = 20;
+    let allQuestions = [];
+
+    // Fetch random questions from each subject
+    for (const sub of subjects) {
+      const subQuestions = await Question.aggregate([
+        { $match: { subject: sub._id } },
+        { $sample: { size: perSubjectCount } }
+      ]);
+      
+      // Populate subject manually since aggregate doesn't do it automatically like .find().populate()
+      const populated = subQuestions.map(q => ({
+        ...q,
+        subject: { _id: sub._id, name: sub.name, slug: sub.slug }
+      }));
+      
+      allQuestions = [...allQuestions, ...populated];
+    }
+
+    // Final shuffle of the combined pool
+    for (let i = allQuestions.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [allQuestions[i], allQuestions[allQuestions[j]]] = [allQuestions[j], allQuestions[i]];
+    }
+
+    res.json(allQuestions);
+  } catch (err) {
+    console.error('PUCET Exam Fetch Error:', err);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
 // @route   POST /api/content/explain
 // @desc    Get AI-generated explanation for a question
 // @access  Private
