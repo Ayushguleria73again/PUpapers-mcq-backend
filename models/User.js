@@ -49,6 +49,10 @@ const userSchema = new mongoose.Schema({
   bookmarks: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Question'
+  }],
+  attemptedQuestions: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Question'
   }]
 }, { timestamps: true });
 

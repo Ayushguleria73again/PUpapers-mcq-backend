@@ -8,6 +8,7 @@ const verifyToken = require('../middleware/auth');
 const verifyAdmin = require('../middleware/admin');
 const { upload } = require('../config/cloudinary');
 const aiModel = require('../config/ai');
+const User = require('../models/User');
 
 // @route   GET /api/content/subjects
 // @desc    Get all subjects
@@ -63,6 +64,22 @@ router.get('/questions', verifyToken, async (req, res) => {
         query.chapter = chapterId;
     }
 
+    // Anti-repeat: Exclude questions already attempted by the user
+    if (req.user && req.user.userId) {
+        const user = await User.findById(req.user.userId);
+        if (user && user.attemptedQuestions && user.attemptedQuestions.length > 0) {
+            // Check if there are any questions left for this subject after excluding attempted ones
+            const remainingCount = await Question.countDocuments({ ...query, _id: { $nin: user.attemptedQuestions } });
+            if (remainingCount > 0) {
+                query._id = { $nin: user.attemptedQuestions };
+            } else {
+                // If all found questions were attempted, we reset for this subject or just show random
+                // For now, we'll just allow repeats if everything is exhausted
+                console.log(`[Anti-Repeat] User ${req.user.userId} has exhausted questions for subject/chapter. Allowing repeats.`);
+            }
+        }
+    }
+
     // Filter by difficulty if provided and not 'all'
     if (req.query.difficulty && req.query.difficulty !== 'all') {
         query.difficulty = req.query.difficulty;
@@ -90,10 +107,19 @@ router.post('/results', verifyToken, async (req, res) => {
       subject: subjectId,
       score,
       totalQuestions,
-      percentage
+      percentage,
+      questions: req.body.questions || [] // Store the IDs of questions in this test
     });
 
     await result.save();
+
+    // Update user's attempted questions list
+    if (req.body.questions && req.body.questions.length > 0) {
+        await User.findByIdAndUpdate(req.user.userId, {
+            $addToSet: { attemptedQuestions: { $each: req.body.questions } }
+        });
+    }
+
     res.json(result);
   } catch (err) {
     console.error('Error saving result:', err);
@@ -506,15 +532,33 @@ router.get('/pucet-exam', verifyToken, async (req, res) => {
       return res.status(404).json({ message: 'One or more subjects for this stream not found' });
     }
 
+    // Get user's attempted questions to exclude them
+    let attemptedIds = [];
+    if (req.user && req.user.userId) {
+        const user = await User.findById(req.user.userId);
+        if (user) attemptedIds = user.attemptedQuestions || [];
+    }
+
     const perSubjectCount = 20;
     let allQuestions = [];
 
     // Fetch random questions from each subject
     for (const sub of subjects) {
-      const subQuestions = await Question.aggregate([
-        { $match: { subject: sub._id } },
+      // Try to find questions NOT attempted first
+      let subQuestions = await Question.aggregate([
+        { $match: { subject: sub._id, _id: { $nin: attemptedIds } } },
         { $sample: { size: perSubjectCount } }
       ]);
+      
+      // If we don't have enough new questions, top up with random ones
+      if (subQuestions.length < perSubjectCount) {
+        const needed = perSubjectCount - subQuestions.length;
+        const extraQuestions = await Question.aggregate([
+            { $match: { subject: sub._id, _id: { $in: attemptedIds } } },
+            { $sample: { size: needed } }
+        ]);
+        subQuestions = [...subQuestions, ...extraQuestions];
+      }
       
       // Populate subject manually since aggregate doesn't do it automatically like .find().populate()
       const populated = subQuestions.map(q => ({
