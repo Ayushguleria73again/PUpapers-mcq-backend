@@ -117,7 +117,8 @@ router.post('/verify-otp', async (req, res) => {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
-      maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      path: '/'
     });
 
     res.json({ 
@@ -191,7 +192,8 @@ router.post('/login', authLimiter, async (req, res) => {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production', // Required for SameSite=None
       sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax', // Required for cross-domain
-      maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      path: '/'
     });
 
     res.json({ 
@@ -209,7 +211,8 @@ router.post('/logout', (req, res) => {
   res.clearCookie('token', {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
-    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax'
+    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+    path: '/'
   });
   res.json({ message: 'Logged out successfully' });
 });
@@ -228,10 +231,12 @@ router.delete('/account', verifyToken, async (req, res) => {
     if (!user) return res.status(404).json({ message: 'User not found' });
 
     // 3. Clear cookie
+    // 3. Clear cookie
     res.clearCookie('token', {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax'
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+      path: '/'
     });
 
     res.json({ message: 'Account and all data deleted successfully' });
