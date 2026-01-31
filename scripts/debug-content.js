@@ -8,7 +8,7 @@ dotenv.config({ path: path.join(__dirname, '../.env') });
 
 const checkContent = async () => {
   try {
-    await mongoose.connect(process.env.MONGO_URI);
+    await mongoose.connect(process.env.MONGODB_URI);
     console.log('MongoDB Connected');
 
     const subjects = await Subject.find({});

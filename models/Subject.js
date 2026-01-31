@@ -13,6 +13,11 @@ const subjectSchema = new mongoose.Schema({
     unique: true,
     lowercase: true
   },
+  streams: {
+    type: [String],
+    enum: ['medical', 'non-medical', 'commerce', 'arts'],
+    default: []
+  },
   image: {
     type: String, // URL to the subject image
     default: 'https://placehold.co/400x300?text=Subject'

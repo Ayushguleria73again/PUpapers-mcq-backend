@@ -7,10 +7,10 @@ const authRoutes = require('./routes/auth');
 const contentRoutes = require('./routes/content');
 
 // Security & Performance Middleware
-const helmet = require('helmet');
-const mongoSanitize = require('express-mongo-sanitize');
-const xss = require('xss-clean');
-const compression = require('compression');
+// const helmet = require('helmet');
+// const mongoSanitize = require('express-mongo-sanitize');
+// const xss = require('xss-clean');
+// const compression = require('compression');
 
 const app = express();
 const PORT = process.env.PORT || 5001; 
@@ -20,7 +20,7 @@ connectDB();
 
 // Request Logger
 app.use((req, res, next) => {
-  console.log(`[${new Date().toISOString()}] ${req.method} ${req.url} | Origin: ${req.get('origin')}`);
+  console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
   next();
 });
 
@@ -28,6 +28,7 @@ app.use((req, res, next) => {
 app.use(cors({
   origin: [
     'http://localhost:3000', 
+    'https://p-upapers-mcq-frontend.vercel.app',
     process.env.CLIENT_URL
   ].filter(Boolean),
   credentials: true,
@@ -37,10 +38,10 @@ app.use(cors({
 
 
 
-app.use(helmet()); // Secure Headers
-app.use(mongoSanitize()); // Prevent NoSQL Injection
-app.use(xss()); // Prevent XSS Attacks
-app.use(compression()); // Compress responses
+// app.use(helmet()); // Secure Headers
+// app.use(mongoSanitize()); // Prevent NoSQL Injection
+// app.use(xss()); // Prevent XSS Attacks
+// app.use(compression()); // Compress responses
 
 app.use(express.json({ limit: '10kb' })); // Limit body size
 app.use(cookieParser());

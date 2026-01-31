@@ -1,0 +1,34 @@
+{
+  "physics": [
+    { "name": "Mechanics", "slug": "mechanics", "description": "Laws of motion, work, energy, and power.", "order": 1 },
+    { "name": "Thermodynamics", "slug": "thermodynamics", "description": "Heat, temperature, and laws of thermodynamics.", "order": 2 },
+    { "name": "Electromagnetism", "slug": "electromagnetism", "description": "Electric charges, fields, and magnetic effects.", "order": 3 },
+    { "name": "Optics", "slug": "optics", "description": "Reflection, refraction, and optical instruments.", "order": 4 },
+    { "name": "Modern Physics", "slug": "modern-physics", "description": "Dual nature of matter, atoms, and nuclei.", "order": 5 },
+    { "name": "Waves & Oscillations", "slug": "waves-oscillations", "description": "SHM, sound waves, and wave properties.", "order": 6 }
+  ],
+  "chemistry": [
+    { "name": "Physical Chemistry", "slug": "physical-chemistry", "description": "Atomic structure, equilibrium, and kinetics.", "order": 1 },
+    { "name": "Organic Chemistry", "slug": "organic-chemistry", "description": "Hydrocarbons, alcohols, and organic reactions.", "order": 2 },
+    { "name": "Inorganic Chemistry", "slug": "inorganic-chemistry", "description": "S-block, P-block, and coordination compounds.", "order": 3 },
+    { "name": "Electrochemistry", "slug": "electrochemistry", "description": "Redox reactions and electrochemical cells.", "order": 4 },
+    { "name": "Polymers & Biomolecules", "slug": "polymers-biomolecules", "description": "Chemistry of life and synthetic polymers.", "order": 5 },
+    { "name": "Environmental Chemistry", "slug": "environmental-chemistry", "description": "Pollution and green chemistry.", "order": 6 }
+  ],
+  "biology": [
+    { "name": "Cell Biology", "slug": "cell-biology", "description": "Cell structure, division, and organelles.", "order": 1 },
+    { "name": "Genetics & Evolution", "slug": "genetics", "description": "Inheritance, variation, and evolution.", "order": 2 },
+    { "name": "Human Physiology", "slug": "human-physiology", "description": "Digestion, respiration, and circulation.", "order": 3 },
+    { "name": "Plant Physiology", "slug": "plant-physiology", "description": "Photosynthesis, transport, and growth.", "order": 4 },
+    { "name": "Ecology", "slug": "ecology", "description": "Ecosystems, biodiversity, and conservation.", "order": 5 },
+    { "name": "Reproduction", "slug": "reproduction", "description": "Reproduction in plants and humans.", "order": 6 }
+  ],
+  "mathematics": [
+    { "name": "Calculus", "slug": "calculus", "description": "Limits, differentiation, and integration.", "order": 1 },
+    { "name": "Algebra", "slug": "algebra", "description": "Matrices, determinants, and complex numbers.", "order": 2 },
+    { "name": "Trigonometry", "slug": "trigonometry", "description": "Trigonometric functions and identities.", "order": 3 },
+    { "name": "Vectors & 3D Geometry", "slug": "vectors-3d", "description": "Vector algebra and three-dimensional lines/planes.", "order": 4 },
+    { "name": "Probability & Statistics", "slug": "probability", "description": "Probability theory and statistical measures.", "order": 5 },
+    { "name": "Coordinate Geometry", "slug": "coordinate-geometry", "description": "Straight lines, circles, and conics.", "order": 6 }
+  ]
+}
