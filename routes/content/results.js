@@ -202,6 +202,7 @@ router.get('/leaderboard', async (req, res) => {
         $project: {
           _id: 1,
           name: '$userInfo.fullName',
+          profileImage: '$userInfo.profileImage',
           totalScore: 1,
           totalQuestions: 1,
           testsTaken: 1,
