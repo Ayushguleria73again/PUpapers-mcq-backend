@@ -3,6 +3,9 @@ const router = express.Router();
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const verifyToken = require('../middleware/auth');
+const User = require('../models/User');
+const verifyToken = require('../middleware/auth');
+const { authLimiter } = require('../middleware/rateLimiter');
 const { sendOTPEmail, sendPasswordResetEmail } = require('../utils/emailService');
 
 // Helper to generate 6-digit OTP
@@ -27,7 +30,7 @@ router.get('/me', verifyToken, async (req, res) => {
 });
 
 // @route   POST /api/auth/signup
-router.post('/signup', async (req, res) => {
+router.post('/signup', authLimiter, async (req, res) => {
   try {
     const { fullName, password } = req.body;
     const email = (req.body.email || '').toLowerCase();
@@ -149,7 +152,7 @@ router.post('/resend-otp', async (req, res) => {
 });
 
 // @route   POST /api/auth/login
-router.post('/login', async (req, res) => {
+router.post('/login', authLimiter, async (req, res) => {
   try {
     const { password } = req.body;
     const email = (req.body.email || '').toLowerCase();

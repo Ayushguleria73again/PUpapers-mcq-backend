@@ -33,6 +33,10 @@ app.use(cors({
 app.use(express.json());
 app.use(cookieParser());
 
+// Rate Limiting
+const { apiLimiter } = require('./middleware/rateLimiter');
+app.use('/api', apiLimiter);
+
 // Health Check
 app.get('/', (req, res) => res.json({ message: 'Server is running' }));
 
