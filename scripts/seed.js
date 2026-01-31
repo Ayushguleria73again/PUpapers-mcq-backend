@@ -1,10 +1,11 @@
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const Subject = require('../models/Subject');
+const Chapter = require('../models/Chapter');
 const Question = require('../models/Question');
 
 // Load env vars
-dotenv.config({ path: './.env' });
+dotenv.config({ path: '../.env' });
 
 const subjects = [
   {
@@ -32,6 +33,29 @@ const subjects = [
     description: 'Solve complex problems with logic and numbers.'
   }
 ];
+
+const sampleChapters = {
+  physics: [
+    { name: 'Mechanics', slug: 'mechanics', description: 'Motion, forces, and energy.' },
+    { name: 'Thermodynamics', slug: 'thermodynamics', description: 'Heat, work, and entropy.' },
+    { name: 'Electromagnetism', slug: 'electromagnetism', description: 'Electric and magnetic fields.' }
+  ],
+  chemistry: [
+    { name: 'Organic Chemistry', slug: 'organic-chemistry', description: 'Carbon-based compounds.' },
+    { name: 'Inorganic Chemistry', slug: 'inorganic-chemistry', description: 'Metals and non-metals.' },
+    { name: 'Physical Chemistry', slug: 'physical-chemistry', description: 'Reaction rates and thermodynamics.' }
+  ],
+  biology: [
+    { name: 'Cell Biology', slug: 'cell-biology', description: 'Structure and function of cells.' },
+    { name: 'Genetics', slug: 'genetics', description: 'Heredity and variation.' },
+    { name: 'Ecology', slug: 'ecology', description: 'Organisms and their environment.' }
+  ],
+  mathematics: [
+    { name: 'Calculus', slug: 'calculus', description: 'Limits, derivatives, and integrals.' },
+    { name: 'Algebra', slug: 'algebra', description: 'Equations and inequalities.' },
+    { name: 'Trigonometry', slug: 'trigonometry', description: 'Triangles and waves.' }
+  ]
+};
 
 const sampleQuestions = {
   physics: [
@@ -112,6 +136,7 @@ const seedDatabase = async () => {
 
     // Clear existing data
     await Subject.deleteMany({});
+    await Chapter.deleteMany({});
     await Question.deleteMany({});
     console.log('Old data cleared.');
 
@@ -119,19 +144,47 @@ const seedDatabase = async () => {
     const insertedSubjects = await Subject.insertMany(subjects);
     console.log(`Seeded ${insertedSubjects.length} subjects.`);
 
-    // Insert Questions linked to Subjects
+    let totalChapters = 0;
     let totalQuestions = 0;
+
+    // Loop through each subject to add content
     for (const sub of insertedSubjects) {
+      // 1. Create Chapters
+      const chaptersList = sampleChapters[sub.slug] || [];
+      const createdChapters = [];
+      
+      if (chaptersList.length > 0) {
+          const chaptersWithId = chaptersList.map((c, idx) => ({
+              ...c,
+              subject: sub._id,
+              order: idx
+          }));
+          const docs = await Chapter.insertMany(chaptersWithId);
+          createdChapters.push(...docs);
+          totalChapters += docs.length;
+      }
+
+      // 2. Create Questions (Distribute across chapters randomly for demo)
       const questionsList = sampleQuestions[sub.slug];
       if (questionsList) {
-        const questionsWithId = questionsList.map(q => ({
-          ...q,
-          subject: sub._id
-        }));
+        const questionsWithId = questionsList.map((q, qIdx) => {
+            // Assign to first chapter if available, or just subject
+            const assignedChapter = createdChapters.length > 0 
+                ? createdChapters[qIdx % createdChapters.length]._id 
+                : null;
+            
+            return {
+                ...q,
+                subject: sub._id,
+                chapter: assignedChapter
+            };
+        });
         await Question.insertMany(questionsWithId);
         totalQuestions += questionsWithId.length;
       }
     }
+    
+    console.log(`Seeded ${totalChapters} chapters.`);
     console.log(`Seeded ${totalQuestions} questions.`);
 
     process.exit(0);
