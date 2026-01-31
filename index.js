@@ -41,7 +41,8 @@ app.use(helmet({
 })); // Secure Headers with cross-origin access
 app.use(compression()); // Compress responses
 
-app.use(express.json({ limit: '10kb' })); // Limit body size
+app.use(express.json({ limit: '5mb' })); // Allow larger payloads for images/content
+app.use(express.urlencoded({ extended: true, limit: '5mb' }));
 app.use(cookieParser());
 
 // Data Security (Manual Sanitization for Express 5 stability)
@@ -64,17 +65,7 @@ app.use((req, res, next) => {
   next();
 });
 
-// Simple XSS protection for body strings
-app.use((req, res, next) => {
-  if (req.body && typeof req.body === 'object') {
-    Object.keys(req.body).forEach(key => {
-      if (typeof req.body[key] === 'string') {
-        req.body[key] = req.body[key].replace(/<script\b[^>]*>([\s\S]*?)<\/script>/gim, "");
-      }
-    });
-  }
-  next();
-});
+// XSS protection is handled by Helmet security headers (removed redundant middleware)
 
 // Rate Limiting
 const { apiLimiter } = require('./middleware/rateLimiter');
