@@ -36,9 +36,9 @@ app.use(cors({
 
 
 
-app.use(helmet({
-  crossOriginResourcePolicy: { policy: "cross-origin" }
-})); // Secure Headers with cross-origin access
+// app.use(helmet({
+//   crossOriginResourcePolicy: { policy: "cross-origin" }
+// })); // Secure Headers with cross-origin access
 app.use(compression()); // Compress responses
 
 app.use(express.json({ limit: '5mb' })); // Allow larger payloads for images/content
@@ -46,24 +46,24 @@ app.use(express.urlencoded({ extended: true, limit: '5mb' }));
 app.use(cookieParser());
 
 // Data Security (Manual Sanitization for Express 5 stability)
-const sanitize = (obj) => {
-  if (!obj || typeof obj !== 'object') return obj;
-  Object.keys(obj).forEach(key => {
-    if (key.startsWith('$') || key.includes('.')) {
-      const newKey = key.replace(/^\$|\./g, '_');
-      obj[newKey] = obj[key];
-      delete obj[key];
-    }
-    if (typeof obj[key] === 'object') sanitize(obj[key]);
-  });
-  return obj;
-};
+// const sanitize = (obj) => {
+//   if (!obj || typeof obj !== 'object') return obj;
+//   Object.keys(obj).forEach(key => {
+//     if (key.startsWith('$') || key.includes('.')) {
+//       const newKey = key.replace(/^\$|\./g, '_');
+//       obj[newKey] = obj[key];
+//       delete obj[key];
+//     }
+//     if (typeof obj[key] === 'object') sanitize(obj[key]);
+//   });
+//   return obj;
+// };
 
-app.use((req, res, next) => {
-  if (req.body) sanitize(req.body);
-  if (req.params) sanitize(req.params);
-  next();
-});
+// app.use((req, res, next) => {
+//   if (req.body) sanitize(req.body);
+//   if (req.params) sanitize(req.params);
+//   next();
+// });
 
 // XSS protection is handled by Helmet security headers (removed redundant middleware)
 
