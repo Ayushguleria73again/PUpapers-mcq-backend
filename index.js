@@ -6,6 +6,12 @@ const connectDB = require('./config/db');
 const authRoutes = require('./routes/auth');
 const contentRoutes = require('./routes/content');
 
+// Security & Performance Middleware
+const helmet = require('helmet');
+const mongoSanitize = require('express-mongo-sanitize');
+const xss = require('xss-clean');
+const compression = require('compression');
+
 const app = express();
 const PORT = process.env.PORT || 5001; 
 
@@ -30,7 +36,14 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
-app.use(express.json());
+
+
+app.use(helmet()); // Secure Headers
+app.use(mongoSanitize()); // Prevent NoSQL Injection
+app.use(xss()); // Prevent XSS Attacks
+app.use(compression()); // Compress responses
+
+app.use(express.json({ limit: '10kb' })); // Limit body size
 app.use(cookieParser());
 
 // Rate Limiting
@@ -38,7 +51,7 @@ const { apiLimiter } = require('./middleware/rateLimiter');
 app.use('/api', apiLimiter);
 
 // Health Check
-app.get('/', (req, res) => res.json({ message: 'Server is running' }));
+app.get('/', (req, res) => res.json({ message: 'Server is running securely' }));
 
 // Routes
 app.use('/api/auth', authRoutes);
