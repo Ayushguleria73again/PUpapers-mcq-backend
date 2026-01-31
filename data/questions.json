@@ -1,0 +1,374 @@
+{
+  "physics": [
+    {
+      "text": "What is the SI unit of Force?",
+      "options": ["Newton", "Joule", "Pascal", "Watt"],
+      "correctOption": 0,
+      "difficulty": "easy",
+      "explanation": "The SI unit of force is the Newton (N)."
+    },
+    {
+      "text": "The rate of change of momentum is directly proportional to?",
+      "options": ["Mass", "Velocity", "Applied Force", "Energy"],
+      "correctOption": 2,
+      "difficulty": "medium",
+      "explanation": "Newton's Second Law: F = dp/dt."
+    },
+    {
+      "text": "Two bodies of masses M and 4M are moving with equal kinetic energies. The ratio of their linear momenta is?",
+      "options": ["1:2", "1:4", "4:1", "1:1"],
+      "correctOption": 0,
+      "difficulty": "hard",
+      "explanation": "p = sqrt(2mK). p1/p2 = sqrt(m1/m2) = sqrt(M/4M) = 1/2."
+    },
+    {
+      "text": "The zeroth law of thermodynamics leads to the concept of?",
+      "options": ["Internal Energy", "Heat Content", "Pressure", "Temperature"],
+      "correctOption": 3,
+      "difficulty": "easy",
+      "explanation": "Zeroth law defines temperature."
+    },
+    {
+      "text": "Efficiency of a Carnot engine working between 300K and 600K is?",
+      "options": ["50%", "100%", "25%", "75%"],
+      "correctOption": 0,
+      "difficulty": "medium",
+      "explanation": "n = 1 - T2/T1 = 1 - 300/600 = 0.5 = 50%."
+    },
+    {
+      "text": "Electric field intensity inside a hollow charged spherical conductor is?",
+      "options": ["Zero", "Infinite", "Depends on radius", "Maximum"],
+      "correctOption": 0,
+      "difficulty": "easy",
+      "explanation": "Electric field inside a conductor is zero."
+    },
+     {
+      "text": "Which wave property separates light from sound?",
+      "options": ["Interference", "Diffraction", "Polarization", "Reflection"],
+      "correctOption": 2,
+      "difficulty": "medium",
+      "explanation": "Only transverse waves (light) can be polarized. Sound is longitudinal."
+    },
+    {
+      "text": "The energy of a photon of wavelength 663 nm is approximately?",
+      "options": ["1.5 eV", "3.0 eV", "2.0 eV", "2.5 eV"],
+      "correctOption": 0,
+      "difficulty": "hard",
+      "explanation": "E = 1240 / lambda (nm) = 1240/663 ≈ 1.8 eV (Exact calc: hc/lambda)."
+    },
+    {
+      "text": "In SHM, acceleration is proportional to?",
+      "options": ["Velocity", "Displacement", "Time", "Frequency"],
+      "correctOption": 1,
+      "difficulty": "easy",
+      "explanation": "a = -omega^2 * x."
+    },
+    {
+      "text": "Which of the following is a scalar quantity?",
+      "options": ["Velocity", "Force", "Work", "Displacement"],
+      "correctOption": 2,
+      "difficulty": "easy",
+      "explanation": "Work is the dot product of force and displacement vectors, hence scalar."
+    },
+    {
+      "text": "The escape velocity from the surface of Earth is approximately:",
+      "options": ["11.2 km/s", "8.9 km/s", "9.8 km/s", "12.4 km/s"],
+      "correctOption": 0,
+      "difficulty": "medium",
+      "explanation": "Escape velocity v = sqrt(2gR) ≈ 11.2 km/s."
+    },
+    {
+      "text": "Bernoulli's theorem is based on conservation of:",
+      "options": ["Mass", "Momentum", "Angular Momentum", "Energy"],
+      "correctOption": 3,
+      "difficulty": "medium",
+      "explanation": "Bernoulli's equation is a restatement of the law of conservation of energy for flowing fluids."
+    },
+    {
+      "text": "A p-type semiconductor is formed by doping Silicon with:",
+      "options": ["Arsenic", "Antimony", "Phosphorus", "Boron"],
+      "correctOption": 3,
+      "difficulty": "medium",
+      "explanation": "Doping with trivalent impurity like Boron creates holes (p-type)."
+    },
+    {
+      "text": "The phenomenon of splitting of white light into its constituent colors is called:",
+      "options": ["Dispersion", "Refraction", "Interference", "Scattering"],
+      "correctOption": 0,
+      "difficulty": "easy",
+      "explanation": "Dispersion is the separation of white light into its spectrum."
+    },
+    {
+      "text": "Two resistors of 6 ohms and 3 ohms are connected in parallel. Equivalent resistance is:",
+      "options": ["9 ohms", "2 ohms", "4.5 ohms", "3 ohms"],
+      "correctOption": 1,
+      "difficulty": "medium",
+      "explanation": "1/R = 1/6 + 1/3 = 3/6 = 1/2. R = 2 ohms."
+    }
+  ],
+  "chemistry": [
+    {
+      "text": "The maximum number of electrons in a subshell is given by:",
+      "options": ["2n^2", "4l + 2", "2l + 1", "n^2"],
+      "correctOption": 1,
+      "difficulty": "medium",
+      "explanation": "For a subshell with azimuthal quantum number l, max electrons = 2(2l+1) = 4l+2."
+    },
+    {
+      "text": "Which bond has the highest bond energy?",
+      "options": ["C-C", "C=C", "C≡C", "C-H"],
+      "correctOption": 2,
+      "difficulty": "easy",
+      "explanation": "Triple bonds are shorter and stronger than double or single bonds."
+    },
+    {
+      "text": "The hybridization of Carbon in Benzene is?",
+      "options": ["sp", "sp2", "sp3", "dsp2"],
+      "correctOption": 1,
+      "difficulty": "easy",
+      "explanation": "Each carbon atom in benzene is bonded to 3 other atoms (2 C, 1 H), so sp2."
+    },
+    {
+      "text": "Which of the following is a diamagnetic species?",
+      "options": ["O2", "O2-", "O2 2-", "NO"],
+      "correctOption": 2,
+      "difficulty": "hard",
+      "explanation": "O2 2- (Peroxide ion) has no unpaired electrons."
+    },
+    {
+      "text": "The oxidation number of Cr in K2Cr2O7 is?",
+      "options": ["+6", "+3", "+7", "+4"],
+      "correctOption": 0,
+      "difficulty": "medium",
+      "explanation": "2(+1) + 2(x) + 7(-2) = 0 => 2x = 12 => x = +6."
+    },
+    {
+      "text": "Which polymer is used in making non-stick cookware?",
+      "options": ["PVC", "Polystyrene", "Teflon", "Bakelite"],
+      "correctOption": 2,
+      "difficulty": "easy",
+      "explanation": "Teflon (PTFE) is used for non-stick coatings."
+    },
+    {
+      "text": "Acid rain is caused by oxides of?",
+      "options": ["Carbon only", "Nitrogen and Sulphur", "Phosphorus", "Hydrogen"],
+      "correctOption": 1,
+      "difficulty": "easy",
+      "explanation": "SO2 and NO2 react with water vapor to form acid rain."
+    },
+    {
+      "text": "For a first order reaction, the half-life depends on?",
+      "options": ["Initial concentration", "Temperature", "Pressure", "None of these"],
+      "correctOption": 1,
+      "difficulty": "medium",
+      "explanation": "t1/2 = 0.693/k, where k depends on temperature."
+    },
+    {
+      "text": "Who discovered the electron?",
+      "options": ["Rutherford", "J.J. Thomson", "Chadwick", "Bohr"],
+      "correctOption": 1,
+      "difficulty": "easy",
+      "explanation": "J.J. Thomson discovered the electron using cathode ray tube experiments."
+    },
+    {
+      "text": "The number of moles of solute present in 1 kg of solvent is called:",
+      "options": ["Molarity", "Molality", "Normality", "Formality"],
+      "correctOption": 1,
+      "difficulty": "medium",
+      "explanation": "Molality (m) is defined as moles of solute per kg of solvent."
+    },
+    {
+      "text": "Which of the following is an ore of Iron?",
+      "options": ["Bauxite", "Haematite", "Galena", "Cinnabar"],
+      "correctOption": 1,
+      "difficulty": "easy",
+      "explanation": "Haematite (Fe2O3) is a major ore of Iron."
+    },
+    {
+      "text": "The shape of the SF6 molecule is:",
+      "options": ["Tetrahedral", "Octahedral", "Linear", "Trigonal planar"],
+      "correctOption": 1,
+      "difficulty": "medium",
+      "explanation": "SF6 involves sp3d2 hybridization and has an octahedral geometry."
+    },
+    {
+      "text": "Brass is an alloy of:",
+      "options": ["Copper and Zinc", "Copper and Tin", "Copper and Nickel", "Lead and Tin"],
+      "correctOption": 0,
+      "difficulty": "medium",
+      "explanation": "Brass is an alloy of Copper (Cu) and Zinc (Zn)."
+    }
+  ],
+  "biology": [
+    {
+      "text": "Which organelle is called the suicide bag of the cell?",
+      "options": ["Ribosome", "Lysosome", "Vacuole", "Centrosome"],
+      "correctOption": 1,
+      "difficulty": "easy",
+      "explanation": "Lysosomes contain hydrolytic enzymes that digest cellular waste."
+    },
+    {
+      "text": "DNA replication is:",
+      "options": ["Conservative", "Semi-conservative", "Dispersive", "None"],
+      "correctOption": 1,
+      "difficulty": "medium",
+      "explanation": "Meselson and Stahl proved DNA replication is semi-conservative."
+    },
+    {
+      "text": "The end product of glycolysis is:",
+      "options": ["Pyruvate", "Acetyl CoA", "Glucose", "Citric Acid"],
+      "correctOption": 0,
+      "difficulty": "medium",
+      "explanation": "One glucose molecule breaks down into two pyruvate molecules."
+    },
+    {
+      "text": "Which hormone creates the 'Fight or Flight' response?",
+      "options": ["Insulin", "Adrenaline", "Thyroxine", "Estrogen"],
+      "correctOption": 1,
+      "difficulty": "easy",
+      "explanation": "Adrenaline (Epinephrine) prepares the body for emergencies."
+    },
+    {
+      "text": "The exchange of gases in lungs occurs in?",
+      "options": ["Trachea", "Bronchi", "Alveoli", "Pleura"],
+      "correctOption": 2,
+      "difficulty": "easy",
+      "explanation": "Alveoli are tiny air sacs where gas exchange happens."
+    },
+    {
+      "text": "Transpiration pull depends on?",
+      "options": ["Capillarity", "Adhesion", "Cohesion", "All of the above"],
+      "correctOption": 3,
+      "difficulty": "medium",
+      "explanation": "Cohesion-tension theory explains transpiration pull."
+    },
+    {
+      "text": "Which of the following is an example of Ex-situ conservation?",
+      "options": ["National Park", "Biosphere Reserve", "Seed Bank", "Sanctuary"],
+      "correctOption": 2,
+      "difficulty": "hard",
+      "explanation": "Seed banks conserve species outside their natural habitat."
+    },
+    {
+      "text": "Which vitamin is water soluble?",
+      "options": ["Vitamin A", "Vitamin D", "Vitamin C", "Vitamin K"],
+      "correctOption": 2,
+      "difficulty": "easy",
+      "explanation": "Vitamins B and C are water soluble; A, D, E, K are fat soluble."
+    },
+    {
+      "text": "The largest gland in the human body is:",
+      "options": ["Pancreas", "Liver", "Thyroid", "Pituitary"],
+      "correctOption": 1,
+      "difficulty": "easy",
+      "explanation": "The liver is the largest gland, weighing about 1.5 kg."
+    },
+    {
+      "text": "Which blood cells help in blood clotting?",
+      "options": ["RBCs", "WBCs", "Platelets", "Plasma"],
+      "correctOption": 2,
+      "difficulty": "easy",
+      "explanation": "Platelets (Thrombocytes) are essential for blood coagulation."
+    },
+    {
+      "text": "Double fertilization is a characteristic of:",
+      "options": ["Gymnosperms", "Angiosperms", "Pteridophytes", "Bryophytes"],
+      "correctOption": 1,
+      "difficulty": "medium",
+      "explanation": "Double fertilization (syngamy + triple fusion) is unique to flowering plants (Angiosperms)."
+    },
+    {
+      "text": "The fluid mosaic model explains the structure of:",
+      "options": ["Cell wall", "Plasma membrane", "Nucleus", "Ribosome"],
+      "correctOption": 1,
+      "difficulty": "medium",
+      "explanation": "Proposed by Singer and Nicolson for the cell membrane."
+    }
+  ],
+  "mathematics": [
+    {
+      "text": "lim (x->0) (sin x / x) is equal to:",
+      "options": ["0", "1", "infinity", "undefined"],
+      "correctOption": 1,
+      "difficulty": "easy",
+      "explanation": "Standard limit."
+    },
+    {
+      "text": "If A is a square matrix, then A + A' is always:",
+      "options": ["Symmetric", "Skew-symmetric", "Identity", "Zero matrix"],
+      "correctOption": 0,
+      "difficulty": "medium",
+      "explanation": "(A+A')' = A' + A = A + A', hence symmetric."
+    },
+    {
+      "text": "The value of i^4 is:",
+      "options": ["1", "-1", "i", "-i"],
+      "correctOption": 0,
+      "difficulty": "easy",
+      "explanation": "i^2 = -1, so i^4 = (-1)^2 = 1."
+    },
+    {
+      "text": "The distance of the point (2,3,4) from the x-axis is:",
+      "options": ["5", "sqrt(13)", "sqrt(20)", "sqrt(25)"],
+      "correctOption": 3,
+      "difficulty": "hard",
+      "explanation": "Distance from x-axis = sqrt(y^2 + z^2) = sqrt(3^2 + 4^2) = sqrt(9+16) = 5."
+    },
+    {
+      "text": "Probability of drawing a King or a Queen from a deck of 52 cards?",
+      "options": ["1/13", "2/13", "4/13", "1/52"],
+      "correctOption": 1,
+      "difficulty": "medium",
+      "explanation": "4 Kings + 4 Queens = 8 cards. P = 8/52 = 2/13."
+    },
+    {
+      "text": "Equation of circle with center (0,0) and radius 5 is:",
+      "options": ["x^2 + y^2 = 5", "x^2 + y^2 = 25", "x^2 - y^2 = 25", "x + y = 5"],
+      "correctOption": 1,
+      "difficulty": "easy",
+      "explanation": "x^2 + y^2 = r^2."
+    },
+    {
+      "text": "The derivative of log(x) is:",
+      "options": ["1/x", "e^x", "x", "1"],
+      "correctOption": 0,
+      "difficulty": "easy",
+      "explanation": "Standard derivative formula."
+    },
+    {
+      "text": "The value of determinant of identity matrix is:",
+      "options": ["0", "1", "-1", "Depends on order"],
+      "correctOption": 1,
+      "difficulty": "easy",
+      "explanation": "The determinant of any identity matrix is always 1."
+    },
+    {
+      "text": "Which term of the AP 2, 5, 8, ... is 23?",
+      "options": ["7th", "8th", "9th", "10th"],
+      "correctOption": 1,
+      "difficulty": "medium",
+      "explanation": "a=2, d=3. 23 = 2 + (n-1)3 => 21 = 3(n-1) => 7 = n-1 => n=8."
+    },
+    {
+      "text": "If y = sin(2x), then dy/dx is:",
+      "options": ["cos(2x)", "2cos(2x)", "-cos(2x)", "-2cos(2x)"],
+      "correctOption": 1,
+      "difficulty": "easy",
+      "explanation": "Chain rule: derivative of sin(u) is cos(u)*u'. u=2x, u'=2."
+    },
+    {
+      "text": "The number of subsets of a set with n elements is:",
+      "options": ["n", "2n", "2^n", "n^2"],
+      "correctOption": 2,
+      "difficulty": "easy",
+      "explanation": "Each element has 2 choices (include/exclude)."
+    },
+    {
+      "text": "Area under the curve y=x from x=0 to x=2 is:",
+      "options": ["1", "2", "3", "4"],
+      "correctOption": 1,
+      "difficulty": "medium",
+      "explanation": "Integral of x is x^2/2. [2^2/2 - 0] = 4/2 = 2."
+    }
+  ]
+}
