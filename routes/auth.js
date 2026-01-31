@@ -31,6 +31,10 @@ router.post('/signup', async (req, res) => {
   try {
     const { fullName, password } = req.body;
     const email = (req.body.email || '').toLowerCase();
+
+    if (!fullName || !email || !password) {
+      return res.status(400).json({ message: 'Please fill in all fields (Name, Email, Password).' });
+    }
     
     let user = await User.findOne({ email });
     if (user && user.isVerified) {
@@ -149,6 +153,10 @@ router.post('/login', async (req, res) => {
   try {
     const { password } = req.body;
     const email = (req.body.email || '').toLowerCase();
+
+    if (!email || !password) {
+      return res.status(400).json({ message: 'Please enter both your email and password.' });
+    }
 
     const user = await User.findOne({ email });
     if (!user) {
