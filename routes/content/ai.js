@@ -53,7 +53,7 @@ router.post('/explain', verifyToken, async (req, res) => {
     console.error('AI Explanation Error:', err);
     // User-friendly message, hiding the raw Google API error
     res.status(500).json({ 
-      message: 'The AI Tutor is currently taking a break. Please try again in potential moments.' 
+      message: 'The AI Tutor is currently taking a break. Please try again in a few moments.' 
     });
   }
 });

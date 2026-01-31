@@ -28,7 +28,6 @@ app.use((req, res, next) => {
 app.use(cors({
   origin: [
     'http://localhost:3000', 
-    'https://p-upapers-mcq-frontend.vercel.app',
     process.env.CLIENT_URL
   ].filter(Boolean),
   credentials: true,
