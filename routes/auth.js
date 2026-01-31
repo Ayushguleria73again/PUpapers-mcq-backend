@@ -200,7 +200,7 @@ router.post('/login', authLimiter, async (req, res) => {
     });
   } catch (err) {
     console.error('SERVER ERROR (LOGIN):', err);
-    res.status(500).json({ message: 'Server error' });
+    res.status(500).json({ message: 'Server error', error: err.message });
   }
 });
 
