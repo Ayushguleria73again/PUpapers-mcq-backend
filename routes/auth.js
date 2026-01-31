@@ -3,8 +3,7 @@ const router = express.Router();
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const verifyToken = require('../middleware/auth');
-const User = require('../models/User');
-const verifyToken = require('../middleware/auth');
+
 const { authLimiter } = require('../middleware/rateLimiter');
 const { sendOTPEmail, sendPasswordResetEmail } = require('../utils/emailService');
 
@@ -15,7 +14,10 @@ const generateOTP = () => Math.floor(100000 + Math.random() * 900000).toString()
 router.get('/me', verifyToken, async (req, res) => {
   try {
     const user = await User.findById(req.user.userId).select('-password');
-    if (!user) return res.status(404).json({ message: 'User profile not found. Please login again.' });
+    if (!user) {
+      res.clearCookie('token');
+      return res.status(404).json({ message: 'User profile not found. Please login again.' });
+    }
     
     // Check if user is verified
     if (!user.isVerified) {

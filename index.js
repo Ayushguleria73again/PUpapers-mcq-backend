@@ -7,10 +7,8 @@ const authRoutes = require('./routes/auth');
 const contentRoutes = require('./routes/content');
 
 // Security & Performance Middleware
-// const helmet = require('helmet');
-// const mongoSanitize = require('express-mongo-sanitize');
-// const xss = require('xss-clean');
-// const compression = require('compression');
+const helmet = require('helmet');
+const compression = require('compression');
 
 const app = express();
 const PORT = process.env.PORT || 5001; 
@@ -38,13 +36,45 @@ app.use(cors({
 
 
 
-// app.use(helmet()); // Secure Headers
-// app.use(mongoSanitize()); // Prevent NoSQL Injection
-// app.use(xss()); // Prevent XSS Attacks
-// app.use(compression()); // Compress responses
+app.use(helmet({
+  crossOriginResourcePolicy: { policy: "cross-origin" }
+})); // Secure Headers with cross-origin access
+app.use(compression()); // Compress responses
 
 app.use(express.json({ limit: '10kb' })); // Limit body size
 app.use(cookieParser());
+
+// Data Security (Manual Sanitization for Express 5 stability)
+const sanitize = (obj) => {
+  if (!obj || typeof obj !== 'object') return obj;
+  Object.keys(obj).forEach(key => {
+    if (key.startsWith('$') || key.includes('.')) {
+      const newKey = key.replace(/^\$|\./g, '_');
+      obj[newKey] = obj[key];
+      delete obj[key];
+    }
+    if (typeof obj[key] === 'object') sanitize(obj[key]);
+  });
+  return obj;
+};
+
+app.use((req, res, next) => {
+  if (req.body) sanitize(req.body);
+  if (req.params) sanitize(req.params);
+  next();
+});
+
+// Simple XSS protection for body strings
+app.use((req, res, next) => {
+  if (req.body && typeof req.body === 'object') {
+    Object.keys(req.body).forEach(key => {
+      if (typeof req.body[key] === 'string') {
+        req.body[key] = req.body[key].replace(/<script\b[^>]*>([\s\S]*?)<\/script>/gim, "");
+      }
+    });
+  }
+  next();
+});
 
 // Rate Limiting
 const { apiLimiter } = require('./middleware/rateLimiter');
