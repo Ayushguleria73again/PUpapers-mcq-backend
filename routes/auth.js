@@ -113,10 +113,12 @@ router.post('/verify-otp', async (req, res) => {
       { expiresIn: '7d' }
     );
 
+    const isProduction = process.env.NODE_ENV === 'production';
+
     res.cookie('token', token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+      secure: isProduction,
+      sameSite: isProduction ? 'none' : 'lax',
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
       path: '/'
     });
@@ -188,10 +190,12 @@ router.post('/login', authLimiter, async (req, res) => {
       { expiresIn: '7d' }
     );
 
+    const isProduction = process.env.NODE_ENV === 'production';
+
     res.cookie('token', token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production', // Required for SameSite=None
-      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax', // Required for cross-domain
+      secure: isProduction, // Required for SameSite=None
+      sameSite: isProduction ? 'none' : 'lax', // Required for cross-domain
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
       path: '/'
     });
@@ -208,10 +212,12 @@ router.post('/login', authLimiter, async (req, res) => {
 
 // @route   POST /api/auth/logout
 router.post('/logout', (req, res) => {
+  const isProduction = process.env.NODE_ENV === 'production';
+  
   res.clearCookie('token', {
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+    secure: isProduction,
+    sameSite: isProduction ? 'none' : 'lax',
     path: '/'
   });
   res.json({ message: 'Logged out successfully' });
