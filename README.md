@@ -47,8 +47,15 @@ The backend API for **pupapers.com**, providing authentication, content manageme
     ```
     The server will start on `http://localhost:5001`.
 
-## 🔒 Security
+## 🔒 Security & Performance
 
+*   **Rate Limiting**: Custom `governor` middleware limits global API traffic and enforces strict limits on Auth routes.
+*   **Hardening**: Protected with `helmet` for secure headers, `xss-clean` for input sanitization, and `express-mongo-sanitize`.
+*   **Compression**: Gzip compression enabled for optimized payload delivery.
 *   **Role-Based Access**: `verifyAdmin` middleware protects sensitive mutation endpoints.
 *   **Token Verification**: `verifyToken` middleware ensures authenticated access to private resources.
-*   **Password Hashing**: Bcryptjs used for secure password storage.
+
+## 🧠 AI Integration
+
+*   **Gemini 1.5 Flash**: Powered by Google's generative AI for instant question explanations.
+*   **Context Aware**: Prompts are dynamically generated based on question text, options, and user answers.
