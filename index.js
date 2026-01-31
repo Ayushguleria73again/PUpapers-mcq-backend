@@ -11,6 +11,7 @@ const helmet = require('helmet');
 const compression = require('compression');
 
 const app = express();
+app.set('trust proxy', 1); // Trust first proxy (Vercel/Heroku/etc)
 const PORT = process.env.PORT || 5001; 
 
 // Connect to Database

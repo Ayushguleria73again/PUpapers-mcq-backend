@@ -15,7 +15,14 @@ router.get('/me', verifyToken, async (req, res) => {
   try {
     const user = await User.findById(req.user.userId).select('-password');
     if (!user) {
-      res.clearCookie('token');
+      // Robust clear to ensure it actually deletes
+      const isProduction = process.env.NODE_ENV === 'production';
+      res.clearCookie('token', {
+        httpOnly: true,
+        secure: isProduction,
+        sameSite: isProduction ? 'none' : 'lax',
+        path: '/'
+      });
       return res.status(404).json({ message: 'User profile not found. Please login again.' });
     }
     
@@ -113,12 +120,12 @@ router.post('/verify-otp', async (req, res) => {
       { expiresIn: '7d' }
     );
 
-    // Cookie Security: Force 'false' on localhost/http to prevent browser blocking
-    const isProduction = process.env.NODE_ENV === 'production' && req.secure;
+    // Cookie Security
+    const isProduction = process.env.NODE_ENV === 'production';
     
     res.cookie('token', token, {
       httpOnly: true,
-      secure: isProduction, 
+      secure: isProduction,
       sameSite: isProduction ? 'none' : 'lax',
       maxAge: 7 * 24 * 60 * 60 * 1000,
       path: '/'
@@ -191,7 +198,7 @@ router.post('/login', authLimiter, async (req, res) => {
       { expiresIn: '7d' }
     );
 
-    const isProduction = process.env.NODE_ENV === 'production' && req.secure;
+    const isProduction = process.env.NODE_ENV === 'production';
 
     res.cookie('token', token, {
       httpOnly: true,
@@ -213,7 +220,7 @@ router.post('/login', authLimiter, async (req, res) => {
 
 // @route   POST /api/auth/logout
 router.post('/logout', (req, res) => {
-  const isProduction = process.env.NODE_ENV === 'production' && req.secure;
+  const isProduction = process.env.NODE_ENV === 'production';
   
   res.clearCookie('token', {
     httpOnly: true,
