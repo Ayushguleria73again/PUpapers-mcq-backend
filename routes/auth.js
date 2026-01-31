@@ -30,7 +30,7 @@ router.get('/me', verifyToken, async (req, res) => {
 router.post('/signup', async (req, res) => {
   try {
     const { fullName, password } = req.body;
-    const email = req.body.email.toLowerCase();
+    const email = (req.body.email || '').toLowerCase();
     
     let user = await User.findOne({ email });
     if (user && user.isVerified) {
@@ -80,7 +80,7 @@ router.post('/signup', async (req, res) => {
 router.post('/verify-otp', async (req, res) => {
   try {
     const { otp } = req.body;
-    const email = req.body.email.toLowerCase();
+    const email = (req.body.email || '').toLowerCase();
     
     const user = await User.findOne({ 
       email, 
@@ -124,7 +124,7 @@ router.post('/verify-otp', async (req, res) => {
 // @route   POST /api/auth/resend-otp
 router.post('/resend-otp', async (req, res) => {
   try {
-    const email = req.body.email.toLowerCase();
+    const email = (req.body.email || '').toLowerCase();
     const user = await User.findOne({ email });
 
     if (!user) return res.status(404).json({ message: 'No account found with this email addressed.' });
@@ -148,7 +148,7 @@ router.post('/resend-otp', async (req, res) => {
 router.post('/login', async (req, res) => {
   try {
     const { password } = req.body;
-    const email = req.body.email.toLowerCase();
+    const email = (req.body.email || '').toLowerCase();
 
     const user = await User.findOne({ email });
     if (!user) {
@@ -330,7 +330,7 @@ module.exports = router;
 // @access  Public
 router.post('/forgot-password', async (req, res) => {
   try {
-    const email = req.body.email.toLowerCase();
+    const email = (req.body.email || '').toLowerCase();
     const user = await User.findOne({ email });
 
     if (!user) {
@@ -358,7 +358,7 @@ router.post('/forgot-password', async (req, res) => {
 router.post('/reset-password', async (req, res) => {
   try {
     const { otp, newPassword } = req.body;
-    const email = req.body.email.toLowerCase();
+    const email = (req.body.email || '').toLowerCase();
 
     const user = await User.findOne({ 
       email, 
